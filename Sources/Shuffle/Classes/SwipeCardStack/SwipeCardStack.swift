@@ -63,7 +63,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     return visibleCards.first?.index
   }
 
-  var numberOfVisibleCards: Int = 2
+  var numberOfVisibleCards: Int = 3
 
   /// An ordered array containing all pairs of currently visible cards.
   ///
@@ -128,33 +128,39 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
   func layoutCard(_ card: SwipeCard, at position: Int) {
     card.transform = .identity
     card.frame = CGRect(origin: .zero, size: cardContainer.frame.size)
-    card.transform = transform(forCardAtPosition: position)
+      card.transform = transform(forCardAtPosition: position, cardSize: card.bounds.size)
     card.isUserInteractionEnabled = position == 0
   }
+    
+    
+    func scaleFactorAndOffsetY(forCardAtPosition position: Int, cardSize: CGSize) -> (CGFloat, CGFloat) {
+        let scale = (cardSize.width - CGFloat(position) * 26) / cardSize.width
+        let offset = cardSize.height * (1 - scale) / 2 + CGFloat(position) * 7
+        return (scale, offset)
+    }
+    
 
-  func scaleFactor(forCardAtPosition position: Int) -> CGPoint {
-    return position == 0 ? CGPoint(x: 1, y: 1) : CGPoint(x: 0.95, y: 0.95)
-  }
+    func transform(forCardAtPosition position: Int, cardSize: CGSize) -> CGAffineTransform {
+        let (scale, offsetY) = scaleFactorAndOffsetY(forCardAtPosition: position, cardSize: cardSize)
+        let t = CGAffineTransform(scaleX: scale, y: scale)
+        return t.translatedBy(x: 0, y: offsetY)
+    }
 
-  func transform(forCardAtPosition position: Int) -> CGAffineTransform {
-    let cardScaleFactor = scaleFactor(forCardAtPosition: position)
-    return CGAffineTransform(scaleX: cardScaleFactor.x, y: cardScaleFactor.y)
-  }
-
-  func backgroundCardDragTransform(topCard: SwipeCard, currentPosition: Int) -> CGAffineTransform {
-    let panTranslation = topCard.panGestureRecognizer.translation(in: self)
-    let minimumSideLength = min(bounds.width, bounds.height)
-    let percentage = max(min(2 * abs(panTranslation.x) / minimumSideLength, 1),
-                         min(2 * abs(panTranslation.y) / minimumSideLength, 1))
-
-    let currentScale = scaleFactor(forCardAtPosition: currentPosition)
-    let nextScale = scaleFactor(forCardAtPosition: currentPosition - 1)
-
-    let scaleX = (1 - percentage) * currentScale.x + percentage * nextScale.x
-    let scaleY = (1 - percentage) * currentScale.y + percentage * nextScale.y
-
-    return CGAffineTransform(scaleX: scaleX, y: scaleY)
-  }
+    func backgroundCardDragTransform(topCard: SwipeCard, currentPosition: Int) -> CGAffineTransform {
+        let panTranslation = topCard.panGestureRecognizer.translation(in: self)
+        let minimumSideLength = min(bounds.width, bounds.height)
+        let percentage = max(min(2 * abs(panTranslation.x) / minimumSideLength, 1),
+                             min(2 * abs(panTranslation.y) / minimumSideLength, 1))
+        
+        let (currentScale, currentOffsetY) = scaleFactorAndOffsetY(forCardAtPosition: currentPosition, cardSize: topCard.bounds.size)
+        let (nextScale, nextOffsetY) = scaleFactorAndOffsetY(forCardAtPosition: currentPosition - 1, cardSize: topCard.bounds.size)
+        
+        let scale = (1 - percentage) * currentScale + percentage * nextScale
+        let offsetY = (1 - percentage) * currentOffsetY + percentage * nextOffsetY
+        
+        let t = CGAffineTransform(scaleX: scale, y: scale)
+        return t.translatedBy(x: 0, y: offsetY)
+    }
 
   // MARK: - Gesture Recognizers
 
