@@ -63,7 +63,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     return visibleCards.first?.index
   }
 
-  var numberOfVisibleCards: Int = 3
+  var numberOfVisibleCards: Int = 4
 
   /// An ordered array containing all pairs of currently visible cards.
   ///
@@ -135,7 +135,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     
     func scaleFactorAndOffsetY(forCardAtPosition position: Int, cardSize: CGSize) -> (CGFloat, CGFloat) {
         let scale = (cardSize.width - CGFloat(position) * 26) / cardSize.width
-        let offset = cardSize.height * (1 - scale) / 2 + CGFloat(position) * 7
+        let offset = position == 3 ? 0 : cardSize.height * (1 - scale) / 2 + CGFloat(position) * 7
         return (scale, offset / scale)
     }
     
