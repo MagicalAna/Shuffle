@@ -161,7 +161,7 @@ class CardStackAnimator: CardStackAnimatable {
 
     // Place background cards in old positions
     for (position, card) in cardStack.backgroundCards.enumerated() {
-      card.transform = cardStack.transform(forCardAtPosition: position)
+        card.transform = cardStack.transform(forCardAtPosition: position, cardSize: card.bounds.size)
     }
 
     // Animate background cards to new positions
