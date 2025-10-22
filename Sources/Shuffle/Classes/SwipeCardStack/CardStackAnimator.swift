@@ -79,7 +79,7 @@ class CardStackAnimator: CardStackAnimatable {
 
     if !animated {
       for (position, value) in cardStack.visibleCards.enumerated() {
-        value.card.transform = cardStack.transform(forCardAtPosition: position, cardSize: value.bounds.size)
+          value.card.transform = cardStack.transform(forCardAtPosition: position, cardSize: value.card.bounds.size)
       }
       completion?(true)
       return
@@ -87,7 +87,7 @@ class CardStackAnimator: CardStackAnimatable {
 
     // Place background cards in old positions
     for (position, value) in cardStack.visibleCards.enumerated() {
-      value.card.transform = cardStack.transform(forCardAtPosition: position + distance, cardSize: value.bounds.size)
+      value.card.transform = cardStack.transform(forCardAtPosition: position + distance, cardSize: value.card.bounds.size)
     }
 
     // Animate background cards to new positions
@@ -95,8 +95,8 @@ class CardStackAnimator: CardStackAnimatable {
       withDuration: cardStack.animationOptions.shiftDuration,
       animations: {
         for (position, value) in cardStack.visibleCards.enumerated() {
-          let transform = cardStack.transform(forCardAtPosition: position)
-          Animator.addTransformKeyFrame(to: value.card, transform: transform, cardSize: value.bounds.size)
+            let transform = cardStack.transform(forCardAtPosition: position, cardSize: value.card.bounds.size)
+          Animator.addTransformKeyFrame(to: value.card, transform: transform)
         }
       },
       completion: completion)
