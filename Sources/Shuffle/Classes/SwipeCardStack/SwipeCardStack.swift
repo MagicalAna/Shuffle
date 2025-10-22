@@ -137,7 +137,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
         let scale = (cardSize.width - CGFloat(position) * 26) / cardSize.width
         var offset = cardSize.height * (1 - scale) / 2 + CGFloat(position) * 7
         if position == 3 {
-            offset -= 10
+            offset -= 15
         }
         return (scale, offset / scale)
     }
