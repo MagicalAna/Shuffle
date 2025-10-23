@@ -242,6 +242,11 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
       }
     }
   }
+    
+    
+    public func undoEnabled() -> Bool {
+        return stateManager.undoSwipe() != nil
+    }
 
   /// Returns the most recently swiped card to the top of the card stack.
   /// - Parameter animated: A boolean indicating whether the undo action should be animated.
