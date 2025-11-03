@@ -31,4 +31,6 @@ protocol SwipeCardDelegate: AnyObject {
   func cardDidFinishSwipeAnimation(_ card: SwipeCard)
   func cardDidSwipe(_ card: SwipeCard, withDirection direction: SwipeDirection)
   func cardDidTap(_ card: SwipeCard)
+    func cardDidContinueUndo(_ card: SwipeCard)
+    func cardDidFinishUndoAnimation(_ card: SwipeCard)
 }

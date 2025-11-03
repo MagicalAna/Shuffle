@@ -164,6 +164,22 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
         let t = CGAffineTransform(scaleX: scale, y: scale)
         return t.translatedBy(x: 0, y: offsetY)
     }
+    
+    
+    func undoBackgroundCardDragTransform(topCard: SwipeCard, currentPosition: Int) -> CGAffineTransform {
+        let panTranslation = topCard.panGestureRecognizer.translation(in: self)
+        let internalTouchLocation = topCard.internalTouchLocation
+        let percentage = min(max((internalTouchLocation.x - panTranslation.x) / (panTranslation.x - 13), 0), 1)
+        
+        let (currentScale, currentOffsetY) = scaleFactorAndOffsetY(forCardAtPosition: currentPosition, cardSize: topCard.bounds.size)
+        let (lastScale, lastOffsetY) = scaleFactorAndOffsetY(forCardAtPosition: currentPosition + 1, cardSize: topCard.bounds.size)
+        
+        let scale = (1 - percentage) * currentScale + percentage * lastScale
+        let offsetY = (1 - percentage) * currentOffsetY + percentage * lastOffsetY
+        
+        let t = CGAffineTransform(scaleX: scale, y: scale)
+        return t.translatedBy(x: 0, y: offsetY)
+    }
 
   // MARK: - Gesture Recognizers
 
@@ -483,4 +499,17 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
   func cardDidSwipe(_ card: SwipeCard, withDirection direction: SwipeDirection) {
     swipeAction(topCard: card, direction: direction, forced: false, animated: true)
   }
+    
+    
+    func cardDidContinueUndo(_ card: SwipeCard) {
+        topCard.transform = backgroundCardDragTransform(topCard: card, currentPosition: 0)
+        for (position, backgroundCard) in backgroundCards.enumerated() {
+          backgroundCard.transform = backgroundCardDragTransform(topCard: card, currentPosition: position + 1)
+        }
+    }
+    
+    
+    func cardDidUndo(_ card: SwipeCard, withDirection direction: SwipeDirection) {
+//        undoAction(topCard: card, direction: direction, forced: false, animated: true)
+      }
 }

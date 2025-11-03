@@ -62,6 +62,7 @@ open class SwipeCard: SwipeView {
   }
 
   private var internalTouchLocation: CGPoint?
+    private var isRight: Bool?
 
   private let overlayContainer = UIView()
   private var overlays = [SwipeDirection: UIView]()
@@ -159,19 +160,31 @@ open class SwipeCard: SwipeView {
   override open func beginSwiping(_ recognizer: UIPanGestureRecognizer) {
     super.beginSwiping(recognizer)
     internalTouchLocation = recognizer.location(in: self)
+      isRight = nil
     delegate?.cardDidBeginSwipe(self)
     animator.removeAllAnimations(on: self)
   }
 
   override open func continueSwiping(_ recognizer: UIPanGestureRecognizer) {
     super.continueSwiping(recognizer)
-    delegate?.cardDidContinueSwipe(self)
+      
+      if isRight == nil {
+          let location = recognizer.location(in: self)
+          isRight = location.x > internalTouchLocation?.x ?? 0
+      }
+      
+      if isRight == true {
+          delegate?.cardDidContinueUndo(self)
+      } else {
+          delegate?.cardDidContinueSwipe(self)
 
-    transform = swipeTransform()
+          transform = swipeTransform()
 
-    for (direction, overlay) in overlays {
-      overlay.alpha = swipeOverlayPercentage(forDirection: direction)
-    }
+          for (direction, overlay) in overlays {
+            overlay.alpha = swipeOverlayPercentage(forDirection: direction)
+          }
+      }
+    
   }
 
   override open func didSwipe(_ recognizer: UIPanGestureRecognizer,
@@ -186,6 +199,12 @@ open class SwipeCard: SwipeView {
     delegate?.cardDidCancelSwipe(self)
     animator.animateReset(on: self)
   }
+    
+    override open func didUndo(_ recognizer: UIPanGestureRecognizer,
+                                with direction: SwipeDirection) {
+      super.didSwipe(recognizer, with: direction)
+      delegate?.cardDidUndo(self, withDirection: direction)
+    }
 
   // MARK: - Main Methods
 
