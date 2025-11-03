@@ -151,7 +151,7 @@ open class SwipeView: UIView {
     if let direction = activeDirection() {
         if self is SwipeCard {
             if direction == .left {
-                didUndo(recognizer, with: direction)
+                didUndo(recognizer)
                 return
             }
         }
@@ -171,7 +171,7 @@ open class SwipeView: UIView {
   ///   - direction: The direction of the swipe.
   open func didSwipe(_ recognizer: UIPanGestureRecognizer, with direction: SwipeDirection) {}
     
-    open func didUndo(_ recognizer: UIPanGestureRecognizer, with direction: SwipeDirection) {}
+    open func didUndo(_ recognizer: UIPanGestureRecognizer) {}
 
   /// This function is called whenever the view recognizes a cancelled swipe. The default implementation
   /// does nothing; subclasses can override this method to perform whatever actions are necessary.

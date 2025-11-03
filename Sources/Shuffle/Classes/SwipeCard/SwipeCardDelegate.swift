@@ -32,5 +32,5 @@ protocol SwipeCardDelegate: AnyObject {
   func cardDidSwipe(_ card: SwipeCard, withDirection direction: SwipeDirection)
   func cardDidTap(_ card: SwipeCard)
     func cardDidContinueUndo(_ card: SwipeCard)
-    func cardDidFinishUndoAnimation(_ card: SwipeCard)
+    func cardDidUndo(_ card: SwipeCard)
 }

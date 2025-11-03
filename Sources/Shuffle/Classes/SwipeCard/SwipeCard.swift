@@ -61,7 +61,7 @@ open class SwipeCard: SwipeView {
     return internalTouchLocation
   }
 
-  private var internalTouchLocation: CGPoint?
+  var internalTouchLocation: CGPoint?
     private var isRight: Bool?
 
   private let overlayContainer = UIView()
@@ -200,10 +200,9 @@ open class SwipeCard: SwipeView {
     animator.animateReset(on: self)
   }
     
-    override open func didUndo(_ recognizer: UIPanGestureRecognizer,
-                                with direction: SwipeDirection) {
+    override open func didUndo(_ recognizer: UIPanGestureRecognizer) {
       super.didSwipe(recognizer, with: direction)
-      delegate?.cardDidUndo(self, withDirection: direction)
+      delegate?.cardDidUndo(self)
     }
 
   // MARK: - Main Methods
