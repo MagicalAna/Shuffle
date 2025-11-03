@@ -136,8 +136,8 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     func scaleFactorAndOffsetY(forCardAtPosition position: Int, cardSize: CGSize) -> (CGFloat, CGFloat) {
         let scale = (cardSize.width - CGFloat(position) * 26) / cardSize.width
         var offset = cardSize.height * (1 - scale) / 2 + CGFloat(position) * 7
-        if position == 3 {
-            offset -= 15
+        if position >= 3 {
+            offset -= 15 * CGFloat(position - 2)
         }
         return (scale, offset / scale)
     }
