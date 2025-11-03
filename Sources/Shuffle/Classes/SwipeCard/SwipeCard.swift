@@ -170,7 +170,7 @@ open class SwipeCard: SwipeView {
       
       if isRight == nil {
           let location = recognizer.location(in: self)
-          isRight = location.x > internalTouchLocation?.x ?? 0
+          isRight = location.x < internalTouchLocation?.x ?? 0
       }
       
       if isRight == true {
