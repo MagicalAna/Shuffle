@@ -169,7 +169,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     func undoBackgroundCardDragTransform(topCard: SwipeCard, currentPosition: Int) -> CGAffineTransform {
         let panTranslation = topCard.panGestureRecognizer.translation(in: self)
         let internalTouchLocation = topCard.internalTouchLocation ?? .zero
-        let percentage = min(max((internalTouchLocation.x - panTranslation.x) / (panTranslation.x - 13), 0), 1)
+        let percentage = min(max(-panTranslation.x / (panTranslation.x - 13), 0), 1)
         
         let (currentScale, currentOffsetY) = scaleFactorAndOffsetY(forCardAtPosition: currentPosition, cardSize: topCard.bounds.size)
         let (lastScale, lastOffsetY) = scaleFactorAndOffsetY(forCardAtPosition: currentPosition + 1, cardSize: topCard.bounds.size)
