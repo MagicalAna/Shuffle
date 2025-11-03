@@ -149,7 +149,7 @@ open class SwipeView: UIView {
   /// - Parameter recognizer: The gesture recognizer associated with the swipe.
   open func endSwiping(_ recognizer: UIPanGestureRecognizer) {
     if let direction = activeDirection() {
-        if let card == self as? SwipeCard {
+        if self is SwipeCard {
             if direction == .left {
                 didUndo(recognizer, with: direction)
                 return
