@@ -201,7 +201,7 @@ open class SwipeCard: SwipeView {
   }
     
     override open func didUndo(_ recognizer: UIPanGestureRecognizer) {
-      super.didSwipe(recognizer, with: direction)
+      super.didUndo(recognizer)
       delegate?.cardDidUndo(self)
     }
 
