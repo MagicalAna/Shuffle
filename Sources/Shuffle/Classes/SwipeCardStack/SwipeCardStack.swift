@@ -502,9 +502,9 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     
     
     func cardDidContinueUndo(_ card: SwipeCard) {
-        topCard?.transform = backgroundCardDragTransform(topCard: card, currentPosition: 0)
+        topCard?.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: 0)
         for (position, backgroundCard) in backgroundCards.enumerated() {
-          backgroundCard.transform = backgroundCardDragTransform(topCard: card, currentPosition: position + 1)
+          backgroundCard.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: position + 1)
         }
     }
     
