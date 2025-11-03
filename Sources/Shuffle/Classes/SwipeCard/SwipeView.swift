@@ -149,9 +149,11 @@ open class SwipeView: UIView {
   /// - Parameter recognizer: The gesture recognizer associated with the swipe.
   open func endSwiping(_ recognizer: UIPanGestureRecognizer) {
     if let direction = activeDirection() {
-        if let card == self as? SwipeCard, direction == .left {
-            didUndo(recognizer, with: direction)
-            return
+        if let card == self as? SwipeCard {
+            if direction == .left {
+                didUndo(recognizer, with: direction)
+                return
+            }
         }
       if dragSpeed(on: direction) >= minimumSwipeSpeed(on: direction)
           || dragPercentage(on: direction) >= 1 {
