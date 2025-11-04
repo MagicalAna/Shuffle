@@ -230,7 +230,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
                    forced: Bool,
                    animated: Bool) {
     guard let swipedIndex = topCardIndex else { return }
-    stateManager.swipe(direction)
+      stateManager.swipe(direction, endTransform: topCard.transform)
     visibleCards.remove(at: 0)
 
     // Insert new card if needed
@@ -513,7 +513,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
         if undoingOriginalTransform == nil {
             guard let previousSwipe = stateManager.undoSwipe() else { return }
             reloadVisibleCards()
-            undoingOriginalTransform = topCard?.transform
+            undoingOriginalTransform = previousSwipe.transform
         }
         guard let undoingOriginalTransform = undoingOriginalTransform else { return }
         let panTranslation = card.panGestureRecognizer.translation(in: self)
