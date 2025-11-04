@@ -262,7 +262,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     
     
     public func undoEnabled() -> Bool {
-        return stateManager.undoSwipe() != nil
+        return !stateManager.swipes.isEmpty
     }
 
   /// Returns the most recently swiped card to the top of the card stack.
@@ -494,7 +494,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
           animator.animateReset(self, topCard: card)
       } else {
           if let topCard = topCard {
-              swipeAction(topCard: topCard, direction: .right, forced: true, animated: true)
+              swipe(.right, animated: true)
           }
           undoingOriginalTransform = nil
       }
@@ -502,6 +502,10 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
 
   func cardDidFinishSwipeAnimation(_ card: SwipeCard) {
     card.removeFromSuperview()
+      if var swipe = stateManager.swipes.last {
+          swipe.endTransform = CGAffineTransform.interpolate(from: .identity, to: card.transform, progress: 0.5)
+          stateManager.swipes[stateManager.swipes.count - 1] = swipe
+      }
   }
 
   func cardDidSwipe(_ card: SwipeCard, withDirection direction: SwipeDirection) {
@@ -513,7 +517,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
         if undoingOriginalTransform == nil {
             guard let previousSwipe = stateManager.undoSwipe() else { return }
             if let card = loadCard(at: previousSwipe.index) {
-                visibleCards.insert(card, at: 0)
+                insertCard(Card(index: previousSwipe.index, card: card), at: 0)
             }
             undoingOriginalTransform = previousSwipe.endTransform
         }
@@ -521,11 +525,9 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
         let panTranslation = card.panGestureRecognizer.translation(in: self)
         let internalTouchLocation = card.internalTouchLocation ?? .zero
         let percentage = min(max(-panTranslation.x / (internalTouchLocation.x - 13), 0), 1)
-        print(percentage)
-        
         topCard?.transform = CGAffineTransform.interpolate(from: undoingOriginalTransform, to: .identity, progress: percentage)
         for (position, backgroundCard) in backgroundCards.enumerated() {
-          backgroundCard.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: position + 1)
+          backgroundCard.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: position)
         }
     }
     
@@ -535,6 +537,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
             animator.animateReset(self, topCard: card)
         }
         undoingOriginalTransform = nil
+        delegate?.cardStack?(self, didUndoCardAt: 0, from: .right)
     }
 }
 

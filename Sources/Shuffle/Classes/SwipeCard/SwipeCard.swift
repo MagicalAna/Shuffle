@@ -62,7 +62,7 @@ open class SwipeCard: SwipeView {
   }
 
   var internalTouchLocation: CGPoint?
-    private var isRight: Bool?
+    var isRight: Bool?
 
   private let overlayContainer = UIView()
   private var overlays = [SwipeDirection: UIView]()

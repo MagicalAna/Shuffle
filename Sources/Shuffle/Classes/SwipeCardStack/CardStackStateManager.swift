@@ -32,7 +32,7 @@ struct Swipe: Equatable {
 
 protocol CardStackStateManagable {
   var remainingIndices: [Int] { get }
-  var swipes: [Swipe] { get }
+  var swipes: [Swipe] { get set }
   var totalIndexCount: Int { get }
 
   func insert(_ index: Int, at position: Int)

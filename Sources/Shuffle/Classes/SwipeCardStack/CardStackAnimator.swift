@@ -63,6 +63,7 @@ class CardStackAnimator: CardStackAnimatable {
       withDuration: duration,
       options: .allowUserInteraction,
       animations: {
+          cardStack.topCard?.transform = .identity
         for (position, card) in cardStack.backgroundCards.enumerated() {
             let transform = cardStack.transform(forCardAtPosition: position + 1, cardSize: card.bounds.size)
           Animator.addTransformKeyFrame(to: card, transform: transform)
