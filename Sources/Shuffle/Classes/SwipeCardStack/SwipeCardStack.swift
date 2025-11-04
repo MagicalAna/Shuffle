@@ -493,7 +493,10 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
       if undoingOriginalTransform == nil {
           animator.animateReset(self, topCard: card)
       } else {
-          swipeAction(topCard: topCard, direction: .right, forced: true, animated: true)
+          if let topCard = topCard {
+              swipeAction(topCard: topCard, direction: .right, forced: true, animated: true)
+          }
+          undoingOriginalTransform = nil
       }
   }
 
@@ -525,7 +528,9 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     
     
     func cardDidUndo(_ card: SwipeCard) {
-        animator.animateReset(self, topCard: self.topCard)
+        if let card = topCard {
+            animator.animateReset(self, topCard: card)
+        }
         undoingOriginalTransform = nil
     }
 }
