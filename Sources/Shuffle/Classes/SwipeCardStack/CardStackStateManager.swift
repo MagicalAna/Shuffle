@@ -27,6 +27,7 @@ import UIKit
 struct Swipe: Equatable {
   var index: Int
   var direction: SwipeDirection
+    var endTransform: CGAffineTransform? = nil
 }
 
 protocol CardStackStateManagable {
@@ -139,12 +140,12 @@ class CardStackStateManager: CardStackStateManagable {
 
   // MARK: - Main Methods
 
-  func swipe(_ direction: SwipeDirection) {
-    if remainingIndices.isEmpty { return }
-    let firstIndex = remainingIndices.removeFirst()
-    let swipe = Swipe(index: firstIndex, direction: direction)
-    swipes.append(swipe)
-  }
+    func swipe(_ direction: SwipeDirection, endTransform: CGAffineTransform? = nil) {
+        if remainingIndices.isEmpty { return }
+        let firstIndex = remainingIndices.removeFirst()
+        let swipe = Swipe(index: firstIndex, direction: direction, endTransform: endTransform)
+        swipes.append(swipe)
+    }
 
   func undoSwipe() -> Swipe? {
     if swipes.isEmpty { return nil }
