@@ -512,7 +512,9 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     func cardDidContinueUndo(_ card: SwipeCard) {
         if undoingOriginalTransform == nil {
             guard let previousSwipe = stateManager.undoSwipe() else { return }
-            reloadVisibleCards()
+            if let card = loadCard(at: previousSwipe.index) {
+                visibleCards.insert(card, at: 0)
+            }
             undoingOriginalTransform = previousSwipe.endTransform
         }
         guard let undoingOriginalTransform = undoingOriginalTransform else { return }
