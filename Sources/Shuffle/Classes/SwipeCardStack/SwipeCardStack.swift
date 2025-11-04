@@ -88,6 +88,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
 
   private var animator: CardStackAnimatable = CardStackAnimator.shared
   private var stateManager: CardStackStateManagable = CardStackStateManager()
+    var undoingOriginalTransform: CGAffineTransform?
 
   // MARK: - Initialization
 
@@ -489,7 +490,11 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
   }
 
   func cardDidCancelSwipe(_ card: SwipeCard) {
-    animator.animateReset(self, topCard: card)
+      if undoingOriginalTransform == nil {
+          animator.animateReset(self, topCard: card)
+      } else {
+          swipeAction(topCard: topCard, direction: .right, forced: true, animated: true)
+      }
   }
 
   func cardDidFinishSwipeAnimation(_ card: SwipeCard) {
@@ -502,7 +507,17 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     
     
     func cardDidContinueUndo(_ card: SwipeCard) {
-        topCard?.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: 0)
+        if undoingOriginalTransform == nil {
+            guard let previousSwipe = stateManager.undoSwipe() else { return }
+            reloadVisibleCards()
+            undoingOriginalTransform = topCard?.transform
+        }
+        guard let undoingOriginalTransform = undoingOriginalTransform else { return }
+        let panTranslation = card.panGestureRecognizer.translation(in: self)
+        let internalTouchLocation = card.internalTouchLocation ?? .zero
+        let percentage = min(max(-panTranslation.x / (internalTouchLocation.x - 13), 0), 1)
+        
+        topCard?.transform = CGAffineTransform.interpolate(from: undoingOriginalTransform, to: .identity, progress: percentage)
         for (position, backgroundCard) in backgroundCards.enumerated() {
           backgroundCard.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: position + 1)
         }
@@ -510,6 +525,57 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
     
     
     func cardDidUndo(_ card: SwipeCard) {
-//        undoAction(topCard: card, direction: direction, forced: false, animated: true)
-      }
+        animator.animateReset(self, topCard: self.topCard)
+        undoingOriginalTransform = nil
+    }
+}
+
+
+extension CGAffineTransform {
+    /// 从 transform 分解出旋转 + 平移（假设无缩放／倾斜或近似无）
+    func decomposeRotationTranslation() -> (rotation: CGFloat, translation: CGPoint) {
+        // translation 直接拿
+        let tx = self.tx
+        let ty = self.ty
+        
+        // 旋转角度：假定没有缩放 / 倾斜的条件下 a = cos θ, b = sin θ
+        let θ = atan2(self.b, self.a)
+        
+        return (θ, CGPoint(x: tx, y: ty))
+    }
+    
+    /// 根据初始 transform a，目标 transform b，和进度 t（0…1），插值得到中间 transform
+    static func interpolate(from a: CGAffineTransform,
+                            to b: CGAffineTransform,
+                            progress t: CGFloat) -> CGAffineTransform {
+        // 分解两端
+        let (θ0, trans0) = a.decomposeRotationTranslation()
+        let (θ1, trans1) = b.decomposeRotationTranslation()
+        
+        // 插值辅助
+        func lerp(_ x0: CGFloat, _ x1: CGFloat, _ t: CGFloat) -> CGFloat {
+            return x0 + (x1 - x0) * t
+        }
+        
+        // 平移插值
+        let tx = lerp(trans0.x, trans1.x, t)
+        let ty = lerp(trans0.y, trans1.y, t)
+        
+        // 旋转插值 — 注意角度差附近跨越 π 可能要处理最短路径
+        var dθ = θ1 - θ0
+        // 把 dθ 约束在 -π … π 区间，以免旋转走大弧线
+        if dθ > .pi {
+            dθ -= 2 * .pi
+        } else if dθ < -CGFloat.pi {
+            dθ += 2 * .pi
+        }
+        let θ = θ0 + dθ * t
+        
+        // 构造新的 transform
+        var tform = CGAffineTransform.identity
+        tform = tform.translatedBy(x: tx, y: ty)
+        tform = tform.rotated(by: θ)
+        
+        return tform
+    }
 }
