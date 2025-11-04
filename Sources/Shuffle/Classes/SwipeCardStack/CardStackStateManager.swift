@@ -42,7 +42,7 @@ protocol CardStackStateManagable {
   func delete(indexAtPosition position: Int)
   func delete(indicesAtPositions positions: [Int])
 
-    func swipe(_ direction: SwipeDirection, endTransform: CGAffineTransform? = nil)
+    func swipe(_ direction: SwipeDirection, endTransform: CGAffineTransform?)
   func undoSwipe() -> Swipe?
   func shift(withDistance distance: Int)
   func reset(withNumberOfCards numberOfCards: Int)
