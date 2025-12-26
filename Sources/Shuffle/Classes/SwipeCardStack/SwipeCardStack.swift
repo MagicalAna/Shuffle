@@ -524,7 +524,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
         guard let undoingOriginalTransform = undoingOriginalTransform else { return }
         let panTranslation = card.panGestureRecognizer.translation(in: self)
         let internalTouchLocation = card.internalTouchLocation ?? .zero
-        let percentage = min(max(-panTranslation.x / (internalTouchLocation.x - 13), 0), 1)
+        let percentage = min(max(panTranslation.x / (internalTouchLocation.x - 13), 0), 1)
         topCard?.transform = CGAffineTransform.interpolate(from: undoingOriginalTransform, to: .identity, progress: percentage)
         for (position, backgroundCard) in backgroundCards.enumerated() {
           backgroundCard.transform = undoBackgroundCardDragTransform(topCard: card, currentPosition: position)
