@@ -494,7 +494,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
           animator.animateReset(self, topCard: card)
       } else {
           if let topCard = topCard {
-              swipe(.right, animated: true)
+              swipe(.left, animated: true)
           }
           undoingOriginalTransform = nil
       }
@@ -537,7 +537,7 @@ open class SwipeCardStack: UIView, SwipeCardDelegate, UIGestureRecognizerDelegat
             animator.animateReset(self, topCard: card)
         }
         undoingOriginalTransform = nil
-        delegate?.cardStack?(self, didUndoCardAt: 0, from: .right)
+        delegate?.cardStack?(self, didUndoCardAt: 0, from: .left)
     }
 }
 
