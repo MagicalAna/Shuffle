@@ -62,7 +62,7 @@ open class SwipeCard: SwipeView {
   }
 
   var internalTouchLocation: CGPoint?
-    var isRight: Bool?
+    var isLeft: Bool?
 
   private let overlayContainer = UIView()
   private var overlays = [SwipeDirection: UIView]()
@@ -160,7 +160,7 @@ open class SwipeCard: SwipeView {
   override open func beginSwiping(_ recognizer: UIPanGestureRecognizer) {
     super.beginSwiping(recognizer)
     internalTouchLocation = recognizer.location(in: self)
-      isRight = nil
+      isLeft = nil
     delegate?.cardDidBeginSwipe(self)
     animator.removeAllAnimations(on: self)
   }
@@ -168,12 +168,12 @@ open class SwipeCard: SwipeView {
   override open func continueSwiping(_ recognizer: UIPanGestureRecognizer) {
     super.continueSwiping(recognizer)
       
-      if isRight == nil {
+      if isLeft == nil {
           let location = recognizer.location(in: self)
-          isRight = location.x < internalTouchLocation?.x ?? 0
+          isLeft = location.x > internalTouchLocation?.x ?? 0
       }
       
-      if isRight == true {
+      if isLeft == true {
           delegate?.cardDidContinueUndo(self)
       } else {
           delegate?.cardDidContinueSwipe(self)
